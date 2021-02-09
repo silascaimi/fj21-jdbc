@@ -74,7 +74,7 @@ public class ContatoDao {
 		try {
 			Contato contato = new Contato();
 			PreparedStatement stmt = this.con.prepareStatement("select * from contatos where id = ?");
-			
+
 			stmt.setInt(1, id);
 			ResultSet rs = stmt.executeQuery();
 
@@ -93,6 +93,37 @@ public class ContatoDao {
 			stmt.close();
 
 			return contato;
+
+		} catch (SQLException e) {
+			throw new DaoException(e);
+		}
+	}
+
+	public List<Contato> startsWithC() {
+
+		try {
+			PreparedStatement ps = this.con.prepareStatement("select * from contatos where nome like 'C%'");
+			ResultSet rs = ps.executeQuery();
+
+			List<Contato> contatos = new ArrayList<>();
+
+			while (rs.next()) {
+				Contato contato = new Contato();
+				contato.setNome(rs.getString("nome"));
+				contato.setEmail(rs.getString("email"));
+				contato.setEndereco(rs.getString("endereco"));
+
+				Calendar data = Calendar.getInstance();
+				data.setTime(rs.getDate("dataNascimento"));
+				contato.setDataNascimento(data);
+
+				contatos.add(contato);
+			}
+
+			ps.close();
+			rs.close();
+
+			return contatos;
 
 		} catch (SQLException e) {
 			throw new DaoException(e);
